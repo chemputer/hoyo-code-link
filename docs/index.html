@@ -2,17 +2,51 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Game Code Redeemer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+    }
+    h1 {
+      color: #333;
+    }
+    label {
+      font-weight: bold;
+    }
+    textarea {
+      width: 100%;
+      max-width: 500px;
+    }
+    select, input[type="checkbox"] {
+      margin-top: 10px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+    #output {
+      margin-top: 30px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    .link {
+      margin-bottom: 10px;
+    }
+  </style>
 </head>
 <body>
   <h1>Game Code Redeemer</h1>
   <p>Enter one or more codes below (one per line) and select a game to generate the redemption links:</p>
   
+  <!-- Code Input -->
   <label for="code-input">Enter Codes:</label><br>
-  <textarea id="code-input" rows="6" cols="50" placeholder="Enter codes here, one per line"></textarea>
+  <textarea id="code-input" rows="6" placeholder="Enter codes here, one per line"></textarea>
   <br><br>
   
+  <!-- Game Selection -->
   <label for="game-select">Choose a game:</label>
   <select id="game-select">
     <option value="genshin">Genshin Impact</option>
@@ -20,45 +54,83 @@
   </select>
   <br><br>
   
+  <!-- Display Options -->
+  <label>
+    <input type="checkbox" id="raw-text-option">
+    Show raw text of links instead of hyperlinks
+  </label>
+  <br>
+  <label>
+    <input type="checkbox" id="markdown-option">
+    Generate Markdown for HoYoLab
+  </label>
+  <br><br>
+  
+  <!-- Generate Button -->
   <button onclick="generateLinks()">Generate Redemption Links</button>
   
+  <!-- Output Section -->
   <div id="output"></div>
 
   <script>
     function generateLinks() {
-      const codes = document.getElementById("code-input").value.trim().split("\n");
+      // Retrieve input values
+      const codesInput = document.getElementById("code-input").value.trim();
+      const codes = codesInput.split("\n").map(code => code.trim()).filter(code => code !== "");
       const game = document.getElementById("game-select").value;
+      const showRawText = document.getElementById("raw-text-option").checked;
+      const generateMarkdown = document.getElementById("markdown-option").checked;
       const output = document.getElementById("output");
 
       // Clear previous output
       output.innerHTML = "";
 
-      // Check if there are codes entered
-      if (codes.length === 0 || (codes.length === 1 && codes[0] === "")) {
+      // Validate input
+      if (codes.length === 0) {
         output.textContent = "Please enter at least one code.";
         return;
       }
 
-      // Generate links for each code
-      codes.forEach(code => {
-        code = code.trim(); // Remove extra spaces around each code
-        if (code) {
-          let url;
-          if (game === "genshin") {
-            url = `https://genshin.hoyoverse.com/en/gift?code=${code}`;
-          } else if (game === "hsr") {
-            url = `https://hsr.hoyoverse.com/en/gift?code=${code}`;
-          }
+      // Determine base URL based on selected game
+      const baseURL = game === "genshin" 
+        ? "https://genshin.hoyoverse.com/en/gift?code=" 
+        : "https://hsr.hoyoverse.com/en/gift?code=";
 
-          // Append link to the output div
+      // Generate links based on selected options
+      codes.forEach(code => {
+        const url = `${baseURL}${encodeURIComponent(code)}`;
+
+        // If "Show Raw Text" is checked, display raw URLs
+        if (showRawText) {
+          const rawText = document.createElement("p");
+          rawText.textContent = url;
+          rawText.className = "link";
+          output.appendChild(rawText);
+        }
+
+        // If "Generate Markdown" is checked, display Markdown links
+        if (generateMarkdown) {
+          const markdownLink = document.createElement("p");
+          markdownLink.textContent = `[Redeem ${code}](${url})`;
+          markdownLink.className = "link";
+          output.appendChild(markdownLink);
+        }
+
+        // If neither checkbox is checked, display clickable hyperlinks
+        if (!showRawText && !generateMarkdown) {
           const link = document.createElement("a");
           link.href = url;
           link.target = "_blank";
-          link.textContent = `Redeem code: ${code}`;
+          link.textContent = `Redeem ${code}`;
+          link.className = "link";
           output.appendChild(link);
-          output.appendChild(document.createElement("br"));
         }
       });
+
+      // If both checkboxes are checked, add spacing between different output types
+      if (showRawText || generateMarkdown) {
+        output.style.whiteSpace = "pre-wrap";
+      }
     }
   </script>
 </body>
