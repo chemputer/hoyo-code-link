@@ -29,12 +29,6 @@
   </select>
   <br><br>
   
-  <label>
-    <input type="checkbox" id="raw-text-option">
-    Show raw text of links instead of hyperlinks
-  </label>
-  <br><br>
-  
   <button onclick="generateLinks()">Generate Redemption Links</button>
   
   <div id="output"></div>
@@ -43,7 +37,6 @@
     function generateLinks() {
       const codes = document.getElementById("code-input").value.trim().split("\n");
       const game = document.getElementById("game-select").value;
-      const showRawText = document.getElementById("raw-text-option").checked;
       const output = document.getElementById("output");
 
       // Clear previous output
@@ -66,20 +59,13 @@
             url = `https://hsr.hoyoverse.com/en/gift?code=${code}`;
           }
 
-          if (showRawText) {
-            // Show raw text link
-            const textNode = document.createElement("p");
-            textNode.textContent = url;
-            output.appendChild(textNode);
-          } else {
-            // Show clickable link
-            const link = document.createElement("a");
-            link.href = url;
-            link.target = "_blank";
-            link.textContent = `Redeem code: ${code}`;
-            output.appendChild(link);
-            output.appendChild(document.createElement("br"));
-          }
+          // Append link to the output div
+          const link = document.createElement("a");
+          link.href = url;
+          link.target = "_blank";
+          link.textContent = `Redeem code: ${code}`;
+          output.appendChild(link);
+          output.appendChild(document.createElement("br"));
         }
       });
     }
