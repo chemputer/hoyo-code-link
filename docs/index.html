@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Code Redeemer</title>
+</head>
+<body>
+  <h1>Game Code Redeemer</h1>
+  <p>Enter one or more codes below (one per line) and select a game to generate the redemption links:</p>
+  
+  <label for="code-input">Enter Codes:</label><br>
+  <textarea id="code-input" rows="6" cols="50" placeholder="Enter codes here, one per line"></textarea>
+  <br><br>
+  
+  <label for="game-select">Choose a game:</label>
+  <select id="game-select">
+    <option value="genshin">Genshin Impact</option>
+    <option value="hsr">Honkai: Star Rail</option>
+  </select>
+  <br><br>
+  
+  <button onclick="generateLinks()">Generate Redemption Links</button>
+  
+  <div id="output"></div>
+
+  <script>
+    function generateLinks() {
+      const codes = document.getElementById("code-input").value.trim().split("\n");
+      const game = document.getElementById("game-select").value;
+      const output = document.getElementById("output");
+
+      // Clear previous output
+      output.innerHTML = "";
+
+      // Check if there are codes entered
+      if (codes.length === 0 || (codes.length === 1 && codes[0] === "")) {
+        output.textContent = "Please enter at least one code.";
+        return;
+      }
+
+      // Generate links for each code
+      codes.forEach(code => {
+        code = code.trim(); // Remove extra spaces around each code
+        if (code) {
+          let url;
+          if (game === "genshin") {
+            url = `https://genshin.hoyoverse.com/en/gift?code=${code}`;
+          } else if (game === "hsr") {
+            url = `https://hsr.hoyoverse.com/en/gift?code=${code}`;
+          }
+
+          // Append link to the output div
+          const link = document.createElement("a");
+          link.href = url;
+          link.target = "_blank";
+          link.textContent = `Redeem code: ${code}`;
+          output.appendChild(link);
+          output.appendChild(document.createElement("br"));
+        }
+      });
+    }
+  </script>
+</body>
+</html>
